@@ -67,7 +67,7 @@ def watch_for(file)
         end
         searchrecord.clear
         logrecord.clear
-        logrecord = searchrecord = cleanup.sort_by {|k,v| -v }.map(&:first) #sort by the number of hits for logging
+        logrecord = cleanup.sort_by {|k,v| -v }.map(&:first) #sort by the number of hits for logging
         lognotification = ''
         searchrecord = cleanup.sort_by {|k,v| -v }[0..19].map(&:first) #sort by the number of hits by top 20 for email
         delivernotification = ''
