@@ -1,0 +1,79 @@
+#!/bin/sh
+
+# Prerequisites:
+# 1. filetail needs to be installed at /home/filetail
+# 2. daemon needs to be installed
+# 3. Script needs to be executed by root
+
+# This script will launch Solr in a mode that will automatically respawn if it
+# crashes. A PID file will be created in the standard location.
+
+start () {
+    echo -n "Starting filetail..."
+ 
+    # Start daemon
+    /home/filetail/filetail &
+    echo $! > /var/run/filetail.pid
+    RETVAL=$?
+    if [ $RETVAL = 0 ]
+    then
+        echo "done."
+    else
+        echo "failed. See error code for more information."
+    fi
+    return $RETVAL
+}
+
+stop () {
+    # Stop daemon
+    echo -n "Stopping filetail..."
+
+    #killproc -p /var/run/filetail.pid /home/filetail/filetail
+    kill -15 `cat /var/run/filetail.pid`
+    RETVAL=$?
+
+    if [ $RETVAL = 0 ]
+    then
+        echo "Done."
+    else
+        echo "Failed. See error code for more information."
+    fi
+    return $RETVAL
+}
+
+
+restart () {
+    stop  
+    start
+}
+
+
+
+status () {
+    # Report on the status of the daemon
+    #daemon --running --verbose --name=solr
+    return 0 
+}
+
+
+case "$1" in
+    start)
+        start
+    ;;
+    status)
+        status
+    ;;
+    stop)
+        stop
+    ;;
+    restart)
+        restart
+    ;;
+    *)
+        echo $"Usage: solr {start|status|stop|restart}"
+        exit 3
+    ;;
+esac
+
+exit $RETVAL
+
